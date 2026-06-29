@@ -1,0 +1,41 @@
+digraph Requirement15ClassDiagram {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.45", ranksep="0.65", fontname="DejaVu Sans", label="דרישה 15 — Class Diagram מעודכן: תיעוד החלטות מקצועיות בפרויקט", labelloc=t, fontsize=20];
+  node [shape=record, fontname="DejaVu Sans", fontsize=10, style="rounded,filled", fillcolor="#FFFFFF", color="#2F2F2F", margin="0.08,0.05"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#424242"];
+
+  legend [shape=note, label="מקרא:\nשחור — רכיבים קיימים\nירוק — תוספות/עדכוני חלק ג'", color="#2E7D32", fontcolor="#2E7D32", fillcolor="#F4FBF4"];
+
+  User [label="{User| - user_id:int\l - username:String\l - password_hash:String\l - role:RoleEnum\l - is_active:Boolean\l - created_at:DateTime\l}"];
+  RoleEnum [label="{[Enumeration] RoleEnum| OfficeManager\l Architect\l Client\l}"];
+  Project [label="{Project| - project_id:int\l - client_id:int\l - project_name:String\l - status:ProjectStatus\l - created_at:DateTime\l - updated_at:DateTime\l| + available_next_statuses():List(ProjectStatus)\l + can_transition_to(new_status):Boolean\l + update_project_status(new_status):void\l}"];
+  ProjectStatus [label="{[Enumeration] ProjectStatus| Active\l OnHold\l Completed\l}"];
+
+  DecisionLog [label="{DecisionLog| - decision_id:int\l - project_id:int\l - created_by_user_id:int\l - decision_text:String\l - created_at:DateTime\l}", color="#2E7D32", fontcolor="#1B5E20"];
+  ChangeHistory [label="{ChangeHistory| - change_id:int\l - project_id:int\l - decision_id:int\l - created_by_user_id:int\l - description:String\l - created_at:DateTime\l}", color="#2E7D32", fontcolor="#1B5E20"];
+
+  DecisionEntryStatus [label="{[Enumeration] DecisionEntryStatus| DecisionDraft\l DecisionInvalid\l DecisionSaving\l DecisionRecorded\l DecisionSaveFailed\l DecisionClosed\l}", color="#2E7D32", fontcolor="#1B5E20"];
+  DecisionEntrySession [label="{DecisionEntrySession| - status:DecisionEntryStatus\l - last_error:String\l| + return_to_draft():void\l + mark_invalid(message):void\l + begin_saving():void\l + mark_recorded():void\l + mark_save_failed(message):void\l + close():void\l}", color="#2E7D32", fontcolor="#1B5E20"];
+
+  DecisionManagementForm [label="{[User Class] DecisionManagementForm| + render(user:User):void\l| + display_decision_form(user,project):void\l + display_decisions(user,project_id):void\l + display_change_history(user,project_id):void\l + display_save_confirmation(message):void\l + display_validation_error(message):void\l + display_save_error(message):void\l}", color="#2E7D32", fontcolor="#1B5E20"];
+
+  DecisionController [label="{[System Class] DecisionController| - repository:DBRepository\l| + list_projects(role):ActionResult\l + list_decisions(role,project_id):ActionResult\l + list_changes(role,project_id):ActionResult\l + save_decision(role,user_id,project_id,text):ActionResult\l - validate_decision_details(text):String\l}", color="#2E7D32", fontcolor="#1B5E20"];
+
+  DBRepository [label="{[System Class] DBRepository| + get_user(user_id):User\l + list_projects():List(Project)\l + get_project(project_id):Project\l + list_decisions_by_project(project_id):List(DecisionLog)\l + list_changes_by_project(project_id):List(ChangeHistory)\l + save_decision_with_history(decision,history):(int, int)\l}", color="#2E7D32", fontcolor="#1B5E20"];
+
+
+  User -> RoleEnum [style=dashed, arrowhead=open, label="uses"];
+  Project -> ProjectStatus [style=dashed, arrowhead=open, label="uses"];
+  DecisionEntrySession -> DecisionEntryStatus [style=dashed, arrowhead=open, label="uses", color="#2E7D32", fontcolor="#1B5E20"];
+
+  Project -> DecisionLog [dir=both, arrowtail=diamond, arrowhead=none, label="records  1 : 0..*", color="#2E7D32", fontcolor="#1B5E20"];
+  Project -> ChangeHistory [dir=both, arrowtail=diamond, arrowhead=none, label="maintains  1 : 0..*", color="#2E7D32", fontcolor="#1B5E20"];
+  User -> DecisionLog [dir=both, arrowtail=none, arrowhead=none, label="records  1 : 0..*", color="#2E7D32", fontcolor="#1B5E20"];
+  User -> ChangeHistory [dir=both, arrowtail=none, arrowhead=none, label="creates audit  1 : 0..*", color="#2E7D32", fontcolor="#1B5E20"];
+  DecisionLog -> ChangeHistory [dir=both, arrowtail=none, arrowhead=none, label="creates exactly 1 audit entry", color="#2E7D32", fontcolor="#1B5E20"];
+
+  DecisionManagementForm -> DecisionController [style=dashed, arrowhead=open, label="sendsRequest", color="#2E7D32", fontcolor="#1B5E20"];
+  DecisionManagementForm -> DecisionEntrySession [style=dashed, arrowhead=open, label="uses", color="#2E7D32", fontcolor="#1B5E20"];
+  DecisionController -> DBRepository [style=dashed, arrowhead=open, label="uses", color="#2E7D32", fontcolor="#1B5E20"];
+  DecisionController -> DecisionLog [style=dashed, arrowhead=open, label="[create]", color="#2E7D32", fontcolor="#1B5E20"];
+  DecisionController -> ChangeHistory [style=dashed, arrowhead=open, label="[create]", color="#2E7D32", fontcolor="#1B5E20"];
+}

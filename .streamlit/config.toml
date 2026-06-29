@@ -1,0 +1,17 @@
+# Rokitna base theme — "Premium black + gold" (ui-ux-pro-max: Luxury/Premium,
+# Exaggerated Minimalism). Warm near-black primary, gold accent, warm-white bg.
+# Fine-grained styling (fonts, dark sidebar, cards, tables) is layered on top via
+# the CSS injected in app.py (_apply_theme).
+
+[theme]
+base = "light"
+primaryColor = "#1C1917"            # warm near-black — primary actions
+backgroundColor = "#FAFAF9"         # warm white — app background
+secondaryBackgroundColor = "#FFFFFF" # white — surfaces / inputs / form cards
+textColor = "#1C1917"               # warm near-black ink
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

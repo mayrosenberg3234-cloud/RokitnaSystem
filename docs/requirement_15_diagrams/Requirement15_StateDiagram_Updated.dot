@@ -1,0 +1,28 @@
+digraph Requirement15StateDiagram {
+  graph [rankdir=LR, bgcolor="white", pad="0.3", nodesep="0.45", ranksep="0.65", fontname="DejaVu Sans", label="דרישה 15 — State Diagram מעודכן: DecisionEntrySession", labelloc=t, fontsize=20];
+  node [fontname="DejaVu Sans", fontsize=10, style="rounded,filled", fillcolor="#FFFFFF", color="#2E7D32", penwidth=1.5];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#2E7D32", penwidth=1.2];
+
+  initial [shape=circle, label="", width=0.18, height=0.18, fillcolor="#000000", color="#000000"];
+  final [shape=doublecircle, label="", width=0.24, height=0.24, fillcolor="#FFFFFF", color="#000000"];
+
+  Draft [shape=box, label="DecisionDraft\n-------------------------\nentry / display_decision_form()\ndo / insertDecisionDetails()"];
+  Invalid [shape=box, label="DecisionInvalid\n-------------------------\nentry / mark_invalid(message)\ndo / display_validation_error()"];
+  Saving [shape=box, label="DecisionSaving\n-------------------------\nentry / begin_saving()\ndo / save_decision_with_history()"];
+  Recorded [shape=box, label="DecisionRecorded\n-------------------------\nentry / mark_recorded()\ndo / display_save_confirmation()\ndo / display_decisions()\ndo / display_change_history()"];
+  Failed [shape=box, label="DecisionSaveFailed\n-------------------------\nentry / mark_save_failed(message)\ndo / display_save_error()"];
+  Closed [shape=box, label="DecisionClosed\n-------------------------\nentry / close()"];
+
+  initial -> Draft [label="openDecisionForm"];
+  Draft -> Invalid [label="saveDecision\n[decisionText missing OR project not found]"];
+  Invalid -> Draft [label="correctDecisionDetails / return_to_draft()"];
+  Draft -> Saving [label="saveDecision\n[details valid AND project exists]"];
+  Saving -> Recorded [label="saveSucceeded / mark_recorded()"];
+  Saving -> Failed [label="saveFailed / mark_save_failed()", color="#A33A3A", fontcolor="#A33A3A"];
+  Failed -> Draft [label="retrySave / return_to_draft()", color="#A33A3A", fontcolor="#A33A3A"];
+  Recorded -> Closed [label="closeDecisionForm"];
+  Closed -> final [label=""];
+
+  note [shape=note, label="DecisionEntrySession is a temporary GUI-process object.\nDecisionLog is the persistent business record saved in SQLite.", color="#2E7D32", fontcolor="#1B5E20", fillcolor="#F4FBF4"];
+  {rank=same; Recorded; note;}
+}

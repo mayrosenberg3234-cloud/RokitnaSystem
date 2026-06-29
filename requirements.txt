@@ -1,0 +1,4 @@
+# Runtime dependencies for the Rokitna Project Management System.
+# Everything else (sqlite3, hashlib, logging, csv, dataclasses, enum, typing,
+# pathlib, datetime) ships with the Python 3.12 standard library.
+streamlit>=1.33

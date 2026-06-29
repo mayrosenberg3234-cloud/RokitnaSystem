@@ -40,10 +40,8 @@ def _apply_theme() -> None:
 # CSS braces need no escaping).  Palette: warm paper background, white surfaces,
 # olive brand, gold accent; editorial Hebrew serif headings + clean sans body.
 _THEME_CSS = """
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&family=Suez+One&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&family=Suez+One&display=swap');
 
 :root {
   --bg: #FAFAF9;          /* warm white */

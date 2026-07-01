@@ -11,15 +11,13 @@ import hashlib
 import secrets
 
 
-def generate_password(length: int = 8) -> str:
-    """Return a readable random password for a newly provisioned account.
+def generate_password() -> str:
+    """Return a 6-digit numeric password for a newly provisioned client account.
 
-    Uses an unambiguous alphabet (no 0/O/1/l) so the office manager can dictate
-    it to the client without confusion, and ``secrets`` for cryptographic
-    randomness.
+    Digits only — no case sensitivity, no ambiguous characters, easy to read
+    aloud or type from a printed sheet.
     """
-    alphabet = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"
-    return "".join(secrets.choice(alphabet) for _ in range(length))
+    return "".join(secrets.choice("0123456789") for _ in range(6))
 
 
 def hash_password(password: str) -> str:

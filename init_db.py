@@ -33,13 +33,14 @@ SCHEMA_STATEMENTS: tuple[str, ...] = (
     """,
     """
     CREATE TABLE IF NOT EXISTS Users (
-        userId       INTEGER PRIMARY KEY AUTOINCREMENT,
-        username     TEXT NOT NULL UNIQUE,
-        passwordHash TEXT NOT NULL,
-        role         TEXT NOT NULL,
-        isActive     INTEGER NOT NULL DEFAULT 1,
-        clientId     INTEGER,
-        createdAt    TEXT NOT NULL DEFAULT (datetime('now')),
+        userId        INTEGER PRIMARY KEY AUTOINCREMENT,
+        username      TEXT NOT NULL UNIQUE,
+        passwordHash  TEXT NOT NULL,
+        plainPassword TEXT,
+        role          TEXT NOT NULL,
+        isActive      INTEGER NOT NULL DEFAULT 1,
+        clientId      INTEGER,
+        createdAt     TEXT NOT NULL DEFAULT (datetime('now')),
         FOREIGN KEY (clientId) REFERENCES Clients (clientId)
     );
     """,
@@ -256,10 +257,14 @@ def _apply_project_migrations(connection) -> None:
 
 
 def _apply_users_migrations(connection) -> None:
-    """Add the client-portal link column to legacy Users tables."""
-    if "clientId" not in _table_columns(connection, "Users"):
+    """Add columns to legacy Users tables."""
+    cols = _table_columns(connection, "Users")
+    if "clientId" not in cols:
         connection.execute("ALTER TABLE Users ADD COLUMN clientId INTEGER")
         logger.info("DATABASE MIGRATION: Users.clientId added")
+    if "plainPassword" not in cols:
+        connection.execute("ALTER TABLE Users ADD COLUMN plainPassword TEXT")
+        logger.info("DATABASE MIGRATION: Users.plainPassword added")
 
 
 def _apply_collaboration_migrations(connection) -> None:

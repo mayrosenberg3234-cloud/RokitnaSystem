@@ -148,6 +148,27 @@ class ManagerOversight:
         else:
             st.caption("עדיין לא נרשמו פעולות במערכת.")
 
+    def _client_credentials_section(self, user: User) -> None:
+        st.markdown("#### פרטי כניסה של לקוחות")
+        result = self._controller.list_client_credentials(user.role)
+        if not result.success:
+            st.caption(result.message)
+            return
+        rows_data = result.data or []
+        if not rows_data:
+            st.caption("אין לקוחות רשומים במערכת.")
+            return
+        rows = []
+        for r in rows_data:
+            rows.append({
+                "שם לקוח": r.get("clientName") or "—",
+                "שם משתמש": r.get("username") or "—",
+                "סיסמה": r.get("plainPassword") or "לא זמינה (נוצר לפני עדכון המערכת)",
+                "פעיל": "כן" if r.get("isActive") else "לא",
+                "נוצר בתאריך": r.get("createdAt") or "—",
+            })
+        st.dataframe(rows, use_container_width=True, hide_index=True)
+
     def _sql_query_section(self) -> None:
         render_sql_query_log(clear_key="sql_clear_manager")
 
@@ -203,6 +224,8 @@ class ManagerOversight:
         st.header("מעקב וניהול פעולות")
         st.caption("שליחת תזכורות וצפייה בכל פעולות האדריכלית והלקוחות.")
         self._display_pending_feedback()
+        st.divider()
+        self._client_credentials_section(user)
         st.divider()
         self._reminders_section(user)
         st.divider()

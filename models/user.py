@@ -53,3 +53,4 @@ class User:
     user_id: Optional[int] = None
     client_id: Optional[int] = None
     created_at: Optional[str] = None
+    plain_password: Optional[str] = None

@@ -367,6 +367,7 @@ class CustomerController:
         account = User(
             username=username,
             password_hash=hash_password(password),
+            plain_password=password,
             role=RoleEnum.CLIENT,
             is_active=True,
             client_id=new_id,

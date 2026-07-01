@@ -161,3 +161,13 @@ class ManagerController:
             return ActionResult.fail("אין לך הרשאה לצפות ביומן הפעילות")
 
         return ActionResult.ok(data=self._repository.list_activity_log(limit=limit))
+
+    def list_client_credentials(self, role: RoleEnum) -> ActionResult:
+        """Return usernames and passwords for all client accounts."""
+        try:
+            require_permission(role, Permission.VIEW_OVERSIGHT)
+        except PermissionError:
+            logger.warning("PERMISSION DENIED (client credentials): %s", role.value)
+            return ActionResult.fail("אין לך הרשאה לצפות בפרטי הכניסה")
+
+        return ActionResult.ok(data=self._repository.list_client_credentials())

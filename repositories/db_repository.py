@@ -1335,12 +1335,13 @@ class DBRepository:
         try:
             cursor = connection.execute(
                 """
-                INSERT INTO Users (username, passwordHash, role, isActive, clientId)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO Users (username, passwordHash, plainPassword, role, isActive, clientId)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (
                     user.username,
                     user.password_hash,
+                    user.plain_password,
                     user.role.value,
                     1 if user.is_active else 0,
                     user.client_id,
@@ -1348,6 +1349,24 @@ class DBRepository:
             )
             connection.commit()
             return int(cursor.lastrowid)
+        finally:
+            connection.close()
+
+    def list_client_credentials(self) -> list[dict]:
+        """Return username, plain password and client name for all client users."""
+        connection = get_connection()
+        try:
+            rows = connection.execute(
+                """
+                SELECT u.userId, u.username, u.plainPassword, u.isActive,
+                       u.createdAt, c.name AS clientName, c.clientId
+                FROM Users u
+                LEFT JOIN Clients c ON c.clientId = u.clientId
+                WHERE u.role = 'Client'
+                ORDER BY u.userId
+                """
+            ).fetchall()
+            return [dict(row) for row in rows]
         finally:
             connection.close()
 
